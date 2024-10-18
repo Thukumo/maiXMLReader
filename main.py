@@ -19,12 +19,12 @@ for path, file in files("."):
         match(len(song_id)):
             case 1 | 2 | 3 | 4:
                 fumens.append([int(song_id), song_name, artist_name])
-            case 5:
+            case 5: #1nnnn がでらっくす譜面らしい
                 dx_fumens.append([int(song_id[1:]), song_name, artist_name])
-            case 6:
+            case 6: #1nnnnn が宴譜面らしい
                 utage_fumens.append([int(song_id[2:]), song_name, artist_name])
             case _:
-                print(f"Failed to switch: {song_id}")
+                print(f"IDから譜面のタイプを識別できませんでした: {song_id=}")
 
 
 fill_brank = True #ここがTrueの場合、データのなかったIDを空欄で埋める(Falseで埋めない)
@@ -38,7 +38,7 @@ if fill_brank:
 marks = {}
 fumen_lists = [fumens, dx_fumens, utage_fumens]
 for (i, j) in itertools.combinations(range(len(fumen_lists)), 2):
-    tmp = [fumen_lists[j][k][0] for k in range(len(fumen_lists[j]))]
+    tmp = set(fumen_lists[j][k][0] for k in range(len(fumen_lists[j])))
     for fumen in fumen_lists[i]:
         if fumen[0] not in marks: marks[fumen[0]] = [fumen, set([i])]
         else: marks[fumen[0]][1].add(i)
@@ -51,11 +51,15 @@ for fumen in marks.values():
     lines.append(fumen[0]+["×" if not normal_exists else "〇",
 "×" if not dx_exists else "〇",
 "×" if not utage_exists else "〇",
-", ".join(list(map(lambda x: utage_fumens[x][1], [i for i in range(len(tmp)) if tmp[i] == fumen[0][0]]))) if utage_exists else ""])
+", ".join(map(lambda x: utage_fumens[x][1], [i for i in range(len(tmp)) if tmp[i] == fumen[0][0]])) if utage_exists else ""])
 
 lines.sort(key=lambda x: x[0])
 #CSVファイルに書き込む(存在する場合は上書き)
-with open(sys.argv[1] if len(sys.argv) == 2 else "Music.csv", "w", newline="", encoding="utf-16") as f:
-    writer = csv.writer(f, delimiter="\t")
-    writer.writerow(["Song ID", "タイトル", "アーティスト名", "スタンダード", "DX", "宴", "宴譜面名"])
-    for l in lines: writer.writerow(l)
+try:
+    with open(sys.argv[1] if len(sys.argv) == 2 else "Music.csv", "w", newline="", encoding="utf-16") as f:
+        writer = csv.writer(f, delimiter="\t")
+        writer.writerow(["Song ID", "タイトル", "アーティスト名", "ST", "DX", "宴", "宴譜面名"])
+        for l in lines: writer.writerow(l)
+except PermissionError:
+    print("ファイルが開けませんでした。ファイルを閉じてから再度実行してください。")
+    exit()
