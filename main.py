@@ -25,19 +25,18 @@ for path, file in files("."):
                 utage_fumens.append([int(song_id[2:]), song_name, artist_name])
             case _:
                 print(f"Failed to switch: {song_id}")
-        #print(f"Song ID: {song_id}\nSong Name: {song_name}\nArtist Name: {artist_name}")
 
 
-fill_brank = True #ここがTrueの場合、データのなかったIDを空欄で埋める(Falseで埋めない)
+fill_brank = False #ここがTrueの場合、データのなかったIDを空欄で埋める(Falseで埋めない)
 
 lines = []
-marks = {}
 tmp = fumens + dx_fumens + utage_fumens
-memo = set(l for l in range(max(tmp, key=lambda x: x[0])[0]))
-for i in range(1, max(memo)):
-    if fill_brank and i not in tmp: lines.append([i, "", ""])
+if fill_brank:
+    for i in set(l for l in range(1, max(tmp, key=lambda x: x[0])[0])):
+        if i not in tmp: lines.append([i, "", "", "", "", "", ""])
 
 #譜面の種類ごとのデータをそれっぽい感じに結合
+marks = {}
 hoge = [fumens, dx_fumens, utage_fumens]
 for (i, j) in itertools.combinations(range(3), 2):
     tmp = [hoge[j][k][0] for k in range(len(hoge[j]))]
@@ -48,16 +47,14 @@ for (i, j) in itertools.combinations(range(3), 2):
 
 #宴譜面名の抽出とか
 tmp = [fumen[0] for fumen in utage_fumens]
-def get_name(id):
-    ret_lis = []
-    for i in range(len(tmp)):
-        if tmp[i] == id: ret_lis.append(i)
-    return ", ".join(list(map(lambda x: utage_fumens[x][1], ret_lis)))
 for fumen in marks.values():
     normal_exists, dx_exists, utage_exists = 0 in fumen[1], 1 in fumen[1], 2 in fumen[1]
-    lines.append(fumen[0]+["×" if not normal_exists else "〇", "×" if not dx_exists else "〇", "×" if not utage_exists else "〇", get_name(fumen[0][0]) if utage_exists else ""])
-lines.sort(key=lambda x: x[0])
+    lines.append(fumen[0]+["×" if not normal_exists else "〇",
+"×" if not dx_exists else "〇",
+"×" if not utage_exists else "〇",
+", ".join(list(map(lambda x: utage_fumens[x][1], [i for i in range(len(tmp)) if tmp[i] == fumen[0][0]]))) if utage_exists else ""])
 
+lines.sort(key=lambda x: x[0])
 #CSVファイルに書き込む(存在する場合は上書き)
 with open(sys.argv[1] if len(sys.argv) == 2 else "Music.csv", "w", newline="", encoding="utf-16") as f:
     writer = csv.writer(f, delimiter="\t")
