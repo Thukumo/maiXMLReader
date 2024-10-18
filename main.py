@@ -27,20 +27,19 @@ for path, file in files("."):
                 print(f"Failed to switch: {song_id}")
 
 
-fill_brank = False #ここがTrueの場合、データのなかったIDを空欄で埋める(Falseで埋めない)
+fill_brank = True #ここがTrueの場合、データのなかったIDを空欄で埋める(Falseで埋めない)
 
 lines = []
-tmp = fumens + dx_fumens + utage_fumens
 if fill_brank:
-    for i in set(l for l in range(1, max(tmp, key=lambda x: x[0])[0])):
-        if i not in tmp: lines.append([i, "", "", "", "", "", ""])
+    tmp = set([l[0] for l in fumens + dx_fumens + utage_fumens])
+    line = [[i, "", "", "", "", "", ""] for i in range(1, max(tmp)) if i not in tmp]
 
-#譜面の種類ごとのデータをそれっぽい感じに結合
+#楽曲のリストをいい感じに結合
 marks = {}
-hoge = [fumens, dx_fumens, utage_fumens]
-for (i, j) in itertools.combinations(range(3), 2):
-    tmp = [hoge[j][k][0] for k in range(len(hoge[j]))]
-    for fumen in hoge[i]:
+fumen_lists = [fumens, dx_fumens, utage_fumens]
+for (i, j) in itertools.combinations(range(len(fumen_lists)), 2):
+    tmp = [fumen_lists[j][k][0] for k in range(len(fumen_lists[j]))]
+    for fumen in fumen_lists[i]:
         if fumen[0] not in marks: marks[fumen[0]] = [fumen, set([i])]
         else: marks[fumen[0]][1].add(i)
         if fumen[0] in tmp: marks[fumen[0]][1].add(j)
