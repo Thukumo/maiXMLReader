@@ -1,4 +1,4 @@
-import os, csv, xml.etree.ElementTree, sys
+import os, csv, xml.etree.ElementTree, sys, re
 
 def files(path):
     for path, _, files in os.walk(path):
@@ -22,8 +22,12 @@ lines = [[i+1, "", "", "×", "×", "×", []] for i in range(max(used_id))]
 for i in range(len(fumen_lists)):
     n = fumen_lists[i][0][3] #要素が0であることはないと思うからこれで
     for fumen in fumen_lists[i]:
-        if n == 5: lines[fumen[0]-1][6].append(fumen[1])
-        else: lines[fumen[0]-1][1:3] = fumen[1:3]
+        ind = fumen[0]-1
+        if n == 5: lines[ind][6].append(fumen[1])
+        if lines[ind][1] == "":
+            lines[ind][1:3] = fumen[1:3]
+            #宴譜面しか譜面がない場合に先頭の"[(漢字1文字)]"を消すための処理 (公開前 and 宴譜面しかない)楽曲かつ変な曲名だと曲名が消える(公開前の宴譜面には先頭に"[漢字1文字]"がつかないため)
+            if n == 5 and bool(re.fullmatch(r"^\[[\u4E00-\u9FFF]\]", fumen[1][:3])): lines[ind][1] = lines[ind][1][3:]
         lines[fumen[0]-1][n] = "〇"
 lines = [line if i+1 in used_id else [i+1, "", "", "", "", "", ""] for i, line in enumerate(lines)] if fill_brank else [line for i, line in enumerate(lines) if i+1 in used_id]
 for line in lines: line[6] = ", ".join(line[6])
