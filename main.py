@@ -14,6 +14,7 @@ for path, file in files("."):
         fumen_lists[num].append([int(song_id[num:]), root.find("name").find("str").text, root.find("artistName").find("str").text, num+3])
 
 fill_brank = True #ここがTrueの場合、データのなかったIDを空欄で埋める(Falseで埋めない)
+fill_all_status = False #存在しなかった譜面の欄に×を表示するかどうか
 
 #データの集計
 used_id = {l[0] for fumen_list in fumen_lists for l in fumen_list}
@@ -29,10 +30,13 @@ for lis in fumen_lists:
             #宴譜面しか譜面がない場合に曲名先頭の"[(漢字1文字)]"を消すための処理 (公開前 and 宴譜面しかない)楽曲かつ変な曲名だと曲名が欠ける(公開前の宴譜面の楽曲名には[(漢字)]がつかないため)
             if n == 5 and bool(re.fullmatch(r"^\[[\u4E00-\u9FFF]\]", fumen[1][:3])): lines[ind][1] = lines[ind][1][3:]
         lines[ind][n] = "〇"
+
+if fill_all_status:
+    for i in used_id: lines[i-1][2:5] = ["〇" if lines[i-1][j] == "〇" else "×" for j in range(2, 5)]
 if not fill_brank: lines = [line for i, line in enumerate(lines) if i+1 in used_id]
-for line in lines:
-    if fill_brank and line[0] not in used_id: line[1] = ""
-    line[6] = ", ".join(line[6])
+for i in range(len(lines)):
+    if fill_brank and lines[i][1] is None: lines[i][1] = ""
+    lines[i][6] = ", ".join(lines[i][6])
 
 #CSVファイルに書き込む(存在する場合は上書き)
 try:
