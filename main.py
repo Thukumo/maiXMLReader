@@ -38,7 +38,7 @@ if fill_all_status:
     for i in used_id: lines[i-1][2:5] = ["〇" if lines[i-1][j] == "〇" else "×" for j in range(2, 5)]
 if not fill_brank: lines = [line for i, line in enumerate(lines) if i+1 in used_id]
 for i in range(len(lines)):
-    if fill_brank and lines[i][1] is None: lines[i][1] = ""
+    if lines[i][1] is None: lines[i][1] = ""
     lines[i][6] = ", ".join(lines[i][6])
 
 #CSVファイルに書き込む(存在する場合は上書き)
