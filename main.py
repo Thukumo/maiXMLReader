@@ -39,8 +39,7 @@ def read_text(path):
             nf = False
     return nf, ids
 
-del_nf, deleted_id = read_text(deleted_path)
-unu_nf, unused_id = read_text(unused_path)
+del_nf, deleted_id, unu_nf, unused_id = read_text(deleted_path), read_text(unused_path)
 if del_nf or unu_nf: print("")
 if del_nf: print("削除譜面リストが見つかりませんでした。")
 if unu_nf: print("未使用譜面リストが見つかりませんでした。")
@@ -77,8 +76,8 @@ if not fill_brank: lines = [line for i, line in enumerate(lines) if i+1 in used_
 for i in range(len(lines)):
     if lines[i][1] is None: lines[i][1] = ""
     lines[i][6] = ", ".join(lines[i][6])
-    if i+1 in deleted_id: lines[i][7] += "削除曲"
-    elif i+1 in unused_id: lines[i][7] += "未使用"
+    if i+1 in deleted_id: lines[i][7] = "削除曲"
+    elif i+1 in unused_id: lines[i][7] = "未使用"
 
 #CSVファイルに書き込む(存在する場合は上書き)
 try:
