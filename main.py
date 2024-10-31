@@ -18,10 +18,7 @@ def read_text(path):
         with open(file, "r") as f:
             for line in f:
                 try:
-                    song_id = line.strip()
-                    if song_id == "": continue
-                    num =  0 if len(song_id) < 5 else len(song_id)-3 -1
-                    lis.append(int(song_id[num:]))
+                    if (song_id := line.strip()) != "": lis.append(int(song_id[0 if len(song_id) < 5 else len(song_id)-3 -1:]))
                 except ValueError:
                     print("譜面IDを読み取れませんでした: "+line.strip())
         return lis
@@ -42,6 +39,7 @@ if unu_nf: print("未使用譜面リストが見つかりませんでした。")
 if del_nf or unu_nf:
     print("")
     if input("↑のデータを使わずに続行しますか? (y/n): ").lower() != "y": exit()
+
 fumen_lists = [[], [], [], []] #ST, DX, 宴, 未使用 or 削除譜面
 #カレントディレクトリ以下のファイル名がMusic.xmlであるすべてのファイルを取得し、そのデータを読む
 for file in files(".", "Music.xml"):
