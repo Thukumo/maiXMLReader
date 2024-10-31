@@ -74,6 +74,9 @@ for i in range(len(lines)):
     lines[i][6] = ", ".join(lines[i][6])
     if i+1 in deleted_id: lines[i][7] = "削除曲"
     elif i+1 in unused_id: lines[i][7] = "未使用"
+    if i+1 in deleted_id and i+1 in unused_id:
+        print(f"楽曲ID{i+1}は削除曲・未使用曲リストの両方に登録されています")
+        lines[i][7] = "削除曲・未使用"
 
 #CSVファイルに書き込む(存在する場合は上書き)
 try:
