@@ -13,38 +13,34 @@ def files(path, name):
 def read_text(path):
     ids = set()
     nf = False
-    try:
-        with open(path, "r") as f:
+    def read(file):
+        lis = []
+        with open(file, "r") as f:
             for line in f:
                 try:
                     song_id = line.strip()
                     if song_id == "": continue
                     num =  0 if len(song_id) < 5 else len(song_id)-3 -1
-                    ids.add(int(song_id[num:]))
-                except ValueError as e:
+                    lis.append(int(song_id[num:]))
+                except ValueError:
                     print("譜面IDを読み取れませんでした: "+line.strip())
+        return lis
+    try:
+        ids.add(*read(path))
     except FileNotFoundError:
         print(f"{os.path.basename(path)}が見つかりませんでした。\nカレントディレクトリから探索します。")
         nf = True
         for file in files(".", os.path.basename(path)):
-            with open(file, "r") as f:
-                for line in f:
-                    try:
-                        song_id = line.strip()
-                        if song_id == "": continue
-                        num =  0 if len(song_id) < 5 else len(song_id)-3 -1
-                        ids.add(int(song_id[num:]))
-                    except ValueError as e:
-                        print("譜面IDを読み取れませんでした: "+line.strip())
+            ids.add(*read(file))
             nf = False
     return nf, ids
 
-del_nf, deleted_id, unu_nf, unused_id = read_text(deleted_path), read_text(unused_path)
+(del_nf, deleted_id), (unu_nf, unused_id) = read_text(deleted_path), read_text(unused_path)
 if del_nf or unu_nf: print("")
 if del_nf: print("削除譜面リストが見つかりませんでした。")
 if unu_nf: print("未使用譜面リストが見つかりませんでした。")
-print("")
 if del_nf or unu_nf:
+    print("")
     if input("↑のデータを使わずに続行しますか? (y/n): ").lower() != "y": exit()
 fumen_lists = [[], [], [], []] #ST, DX, 宴, 未使用 or 削除譜面
 #カレントディレクトリ以下のファイル名がMusic.xmlであるすべてのファイルを取得し、そのデータを読む
