@@ -53,8 +53,7 @@ for file in files(".", "Music.xml"):
 
 #データの集計
 used_id = {l[0] for list in fumen_lists for l in list}
-used_id.update(deleted_id, unused_id)
-lines = [[i+1, None, "", "", "", "", [], ""] for i in range(max(used_id))]
+lines = [[i+1, None, "", "", "", "", [], ""] for i in range(max(used_id | deleted_id | unused_id))]
 for lis in fumen_lists:
     if len(lis) != 0: n = lis[0][3]
     for fumen in lis:
