@@ -52,7 +52,7 @@ for file in files(".", "Music.xml"):
         fumen_lists[3].append([int(song_id[num:]), root.find("name").find("str").text, root.find("artistName").find("str").text, 6])
 
 #データの集計
-used_id = {l[0] for list in fumen_lists for l in list} | deleted_id | unused_id
+used_id = {l[0] for list in fumen_lists for l in list} | deleted_id | unused_id 
 lines = [[i+1, None, "", "", "", "", [], ""] for i in range(max(used_id))]
 for lis in fumen_lists:
     if len(lis) != 0: n = lis[0][3]
@@ -82,7 +82,7 @@ try:
     with open(sys.argv[1] if len(sys.argv) == 2 else "maimai.csv", "w", newline="", encoding="utf-16") as f:
         writer = csv.writer(f, delimiter="\t")
         writer.writerow(["Song ID", "タイトル", "アーティスト名", "ST", "DX", "宴", "宴譜面名", "備考"])
-        for l in lines: writer.writerow(l)
+        writer.writerows(lines)
 except PermissionError:
     print("指定されたCSVファイルが開けませんでした。ファイルを閉じてから再度実行してください。")
     exit()
