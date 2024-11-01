@@ -53,13 +53,15 @@ for file in files(".", "Music.xml"):
 
 #データの集計
 used_id = {l[0] for list in fumen_lists for l in list}
+used_id.update(deleted_id, unused_id)
 lines = [[i+1, None, "", "", "", "", [], ""] for i in range(max(used_id))]
 for lis in fumen_lists:
     if len(lis) != 0: n = lis[0][3]
     for fumen in lis:
         if lines[ind := fumen[0]-1][1] is None:
             lines[ind][1:3] = fumen[1:3]
-            #宴譜面しか譜面がない場合に曲名先頭の"[(漢字1文字)]"を消すための処理 (公開前 and 宴譜面しかない)楽曲かつ変な曲名だと曲名が欠ける(公開前の宴譜面の楽曲名には[(漢字)]がつかないため)
+            #宴譜面しか譜面がない場合に曲名先頭の"[(漢字1文字)]"を消すための処理
+            #公開前の宴譜面の楽曲名には[(漢字)]がつかないため(公開前 and 宴譜面しかない)楽曲かつ変な曲名だと曲名が欠ける
             if n == 5 and bool(re.fullmatch(r"^\[[\u4E00-\u9FFF]\]", fumen[1][:3])): lines[ind][1] = lines[ind][1][3:]
         if n == 5: lines[ind][6].append(fumen[1])
         if n != 6: lines[ind][n] = "〇"
