@@ -52,7 +52,7 @@ for file in files(".", "Music.xml"):
         fumen_lists[3].append([int(song_id[num:]), root.find("name").find("str").text, root.find("artistName").find("str").text, 6])
 
 #データの集計
-used_id = {l[0] for list in fumen_lists for l in list} | deleted_id | unused_id 
+used_id = {l[0] for list in fumen_lists for l in list} | deleted_id | unused_id
 lines = [[i+1, None, "", "", "", "", [], ""] for i in range(max(used_id))]
 for lis in fumen_lists:
     if len(lis) != 0: n = lis[0][3]
